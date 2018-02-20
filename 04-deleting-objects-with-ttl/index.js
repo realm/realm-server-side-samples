@@ -1,33 +1,48 @@
 const Realm = require('realm');
-const twilio = require('twilio')
+const moment = require('moment');
+const faker = require('faker');
 
-const twilioClient = twilio('REPLACE_ME', 'REPLACE_ME')
-const twilioPhoneNumber = 'REPLACE_ME'
-
-// copy your instance URL here
-const NOTIFIER_PATH = '/textmessages'
-var SERVER_URL = '//REPLACE_ME';
-
-const TextMessageSchema = {
-  name: 'TextMessage',
+const ProductSchema = {
+  name: 'Product',
+  primaryKey: 'string',
   properties: {
-    toPhoneNumber: 'string',
-    text: { type: 'string', default: '' }
+    productId: 'int',
+    price: { type: 'float', default: 0 },
+    createdOn: { type: 'date', default: Date.now() },
+    expiresOn: { type: 'date', default: moment().add(5, 's').toDate() } // expires after 5 seconds
   }
-};
+}
 
 async function main() {
   const adminUser = await Realm.Sync.User.login(`https:${SERVER_URL}`, 'realm-admin', 'REPLACE_ME')
-  Realm.Sync.addListener(`realm:${SERVER_URL}`, adminUser, NOTIFIER_PATH, 'change', async (changeEvent) => {
-    const textMessages = realm.objects('TextMessage');
-    const insertedNotificationsIndices = changeEvent.changes.Notification.insertions;
-    for (let index of insertedNotificationsIndices) {
-      const textMessage = notifications[index]
-      await twilioClient.messages.create({
-        body: textMessage.text,
-        to: textMessage.phoneNumber,
-        from: twilioPhoneNumber
+  const realm = new Realm({
+    sync: {
+      user: adminUser,
+      url: `realms://${SERVER_URL}/products`
+    }
+  })
+  // lets add some products
+  realm.write(() => {
+    for (let index = 0; index < 100; index++) {
+      realm.create('Product', {
+        productId: index,
+        price: faker.random.number({min:5, max:10}),
+        createdOn: new Date(),
+        // a random expiry date between 1 second and 60 seconds
+        expiresOn: moment().add(faker.random.number({min:1, max:60}), 's').toDate()
       })
     }
-  });
+  })
+
+  setInterval(() => {
+    const expiredObjects = realm.objects('Product').filtered('expiresOn <= $0', new Date())
+    if (expiredObjects.length == 0) {
+      // if no expired objects don't make a database transaction
+      return
+    }
+    realm.write(() => {
+      realm.delete(expiredObjects)
+    })
+  }, 2000) // poll every 2 seconds
 }
+main()
