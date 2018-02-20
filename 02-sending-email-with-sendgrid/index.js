@@ -1,7 +1,6 @@
 const Realm = require('realm');
 const OneSignal = require('onesignal-node');
 
-
 const oneSignalClient = new OneSignal.Client({
   userAuthKey: 'REPLACE_ME',
   // note that "app" must have "appAuthKey" and "appId" keys
@@ -9,13 +8,13 @@ const oneSignalClient = new OneSignal.Client({
 });
 
 // copy your instance URL here
-var SERVER_URL = '//REPLACE_ME';
+const NOTIFIER_PATH = '/emails'
+const SERVER_URL = '//REPLACE_ME';
 
-const NotificationSchema = {
-  name: 'Notification',
+const EmailSchema = {
+  name: 'Email',
   properties: {
-    toUserIds: 'string[]',
-    contentAvailable: { type: 'bool', default: false },
+    toEmails: 'string[]',
     text: { type: 'string', default: '' }
   }
 };

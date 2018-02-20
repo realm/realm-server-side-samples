@@ -9,7 +9,8 @@ const oneSignalClient = new OneSignal.Client({
 });
 
 // copy your instance URL here
-var SERVER_URL = '//REPLACE_ME';
+const NOTIFIER_PATH = '/notifications'
+const SERVER_URL = '//REPLACE_ME';
 
 const NotificationSchema = {
   name: 'Notification',

@@ -9,6 +9,6 @@ Node v7.6.x or higher __v.8.9.x or higher is recommended__
 ## Table of Contents
 
 1. [Push Notifications with One Signal](/01-push-notifications-with-one-signal)
-2. Sending Email with Sendgrid
-3. Sending SMS with Twilio
-4. [Deleting objects with TTL
+2. [Sending Email with Sendgrid](02-sending-email-with-sendgrid)
+3. [Sending SMS with Twilio](03-sending-text-messages-with-twilio)
+4. [Deleting objects with TTL](04-deleting-objects-with-ttl)
