@@ -2,6 +2,8 @@ const Realm = require('realm');
 const moment = require('moment');
 const faker = require('faker');
 
+const SERVER_URL = 'REPLACE_ME'
+
 const ProductSchema = {
   name: 'Product',
   primaryKey: 'string',
