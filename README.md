@@ -8,5 +8,7 @@ Node v6.11.3 (v.8.9.x or higher recommended)
 
 ## Table of Contents
 
-1. Push Notifications with One Signal
+1. [Push Notifications with One Signal](/01-push-notifications-with-one-signal)
 2. Sending Email with Sendgrid
+3. Sending SMS with Twilio
+4. 
