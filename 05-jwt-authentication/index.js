@@ -11,6 +11,9 @@ app.post('/custom-login', (req, res) => {
   const customPin = req.body.customPin;
   const isAdmin = req.body.isAdmin || false
 
+
+  // BEGIN: This is just a simulation of custom authentication logic.
+
   if (!customUsername || customUsername !== '') {
     res.status(400).send({
       message: 'customUsername parameter cannot be empty'
@@ -34,6 +37,7 @@ app.post('/custom-login', (req, res) => {
     isAdmin: true // optional
     // other properties (ignored by Realm Object Server)
   };
+  // END: This is just a simulation of custom authentication logic.
 
   /**
    * The passphrase is `iloverealm`. Check out the keygen.sh file to change this passphrase
