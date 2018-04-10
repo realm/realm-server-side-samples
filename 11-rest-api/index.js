@@ -41,7 +41,7 @@ const ResponseSchema = {
 }
 
 async function main() {
-  const adminUser = await Realm.Sync.User.login(`https:${SERVER_URL}`, ADMIN_USER_NAME, ADMIN_PASSWORD)
+  const adminUser = await Realm.Sync.User.login(AUTH_SERVER_URL, ADMIN_USER_NAME, ADMIN_PASSWORD)
   Realm.Sync.addListener(REALM_SERVER_URL, admin, REGEX_PATTERN, 'change', async (changeEvent) => {
     const matches = changeEvent.path.match(REGEX_PATTERN);
     const userId = matches[1];
