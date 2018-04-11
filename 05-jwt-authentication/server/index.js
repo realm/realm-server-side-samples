@@ -1,10 +1,12 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken')
 const fs = require('fs');
 const app = express()
 
-const key = fs.readFileSync('privatekey.pem');
+const key = fs.readFileSync('./privatekey.pem');
 
+app.use(bodyParser.json())
 app.post('/custom-login', (req, res) => {
   const customUsername = req.body.customUsername;
   const customPassword = req.body.customPassword;
@@ -14,22 +16,25 @@ app.post('/custom-login', (req, res) => {
 
   // BEGIN: This is just a simulation of custom authentication logic.
 
-  if (!customUsername || customUsername !== '') {
+  if (!customUsername || customUsername === '') {
     res.status(400).send({
       message: 'customUsername parameter cannot be empty'
     })
+    return
   }
 
-  if (!customPassword !== 'iloverealm') {
+  if (customPassword !== 'iloverealm') {
     res.status(401).send({
       message: `Oh no your customPassword field value is isn't equal to 'iloverealm'`
     })
+    return
   }
 
-  if (!customPin !== '1234') {
+  if (customPin !== '1234') {
     res.status(400).send({
       message: 'customPin parameter cannot be empty'
     })
+    return
   }
 
   const payload = {
@@ -49,7 +54,7 @@ app.post('/custom-login', (req, res) => {
   })
 })
 
-const PORT = process.env.PORT || 9080
+const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
   console.log(`Express server is listening on ${PORT}`);
 })
