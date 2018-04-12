@@ -4,16 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "genratekeys": "sh ./keygen.sh",
-    "postinstall": "npm run genratekeys",
+    "start": "node ros-server.js & node auth-server",
+    "deletekeys": "rm privatekey.pem && rm publickey.pem",
+    "generatekeys": "sh ./keygen.sh",
+    "postinstall": "npm run generatekeys",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.2.1",
-    "realm": "^2.2.9"
+    "realm": "^2.2.9",
+    "realm-object-server": "^3.1.0"
   },
   "author": "",
   "license": "ISC"

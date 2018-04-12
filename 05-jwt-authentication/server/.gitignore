@@ -1,3 +1,5 @@
 node_modules
 privatekey.pem
 publickey.pem
+data
+realm-object-server
