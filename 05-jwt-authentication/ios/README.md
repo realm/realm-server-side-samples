@@ -1,4 +1,4 @@
-# Realm JWT Sample 
+# Realm JWT Sample - iOS
 
 1. Run cocoapods with `pod install --repo-update`
 2. Open `RealmJWTSample.xcworkspace`
