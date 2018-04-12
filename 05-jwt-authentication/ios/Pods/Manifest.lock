@@ -1,0 +1,30 @@
+PODS:
+  - Alamofire (4.7.1)
+  - Eureka (4.1.1)
+  - Realm (3.3.2):
+    - Realm/Headers (= 3.3.2)
+  - Realm/Headers (3.3.2)
+  - RealmSwift (3.3.2):
+    - Realm (= 3.3.2)
+
+DEPENDENCIES:
+  - Alamofire
+  - Eureka
+  - RealmSwift
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - Alamofire
+    - Eureka
+    - Realm
+    - RealmSwift
+
+SPEC CHECKSUMS:
+  Alamofire: 68d7d521118d49c615a8d2214d87cdf525599d30
+  Eureka: b88fb930e42c79f8c03c373d0fcdc28c1d6c50ed
+  Realm: d927fbf66df5532cfafc08afb5f7e53ded37b894
+  RealmSwift: 4e903a494e05d866581d69ad6f7e7b879d446baf
+
+PODFILE CHECKSUM: 0fc1b90535571f95a81818338a6e79c43b92eec5
+
+COCOAPODS: 1.5.0
