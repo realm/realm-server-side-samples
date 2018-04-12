@@ -6,8 +6,7 @@ target 'RealmJWTSample' do
   use_frameworks!
 
   # Pods for RealmJWTSample
-  pod 'RealmSwift'
+  pod 'RealmSwift', '~> 3.3.2'
   pod 'Eureka'
   pod 'Alamofire'
-  pod 'SwiftyJSON'
 end
