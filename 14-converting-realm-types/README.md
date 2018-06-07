@@ -1,6 +1,6 @@
 # 14. Converting Realm Types
 
-The following example show you how to convert realm types.  In the future, we will offer an API to do this.  For now, you can do this by editing the __admin Realm, but make sure to do so with care!  The logic used in this script assumes that you do not have Realms paths that contain "__" which are present in system realms (which we do not wish to alter).
+The following example show you how to convert realm types.  In the future, we will offer an API to do this.  For now, you can do this by editing the admin Realm, but make sure to do so with care!  The logic used in this script assumes that you do not have Realms paths that contain a double underscore which are present in system realms (which we do not wish to alter).
 
 To run the converter: 
 1) Run `npm install`
