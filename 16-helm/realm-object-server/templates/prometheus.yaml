@@ -1,0 +1,261 @@
+{{- if .Values.prometheus.enabled -}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-prometheus
+  labels:
+    app: prometheus
+    chart: {{ template "realm-object-server.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-prometheus
+  labels:
+    app: prometheus
+    chart: {{ template "realm-object-server.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - endpoints
+      - pods
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-prometheus
+  labels:
+    app: prometheus
+    chart: {{ template "realm-object-server.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-prometheus
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-prometheus
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-prometheus
+  labels:
+    app: prometheus
+    chart: {{ template "realm-object-server.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.prometheus.storageClass }}
+  storageClassName: {{ .Values.prometheus.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-prometheus
+  labels:
+    app: prometheus
+    chart: {{ template "realm-object-server.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  prometheus.yml: |-
+    scrape_configs:
+    - job_name: realm-object-server
+      scrape_interval: 30s
+      scrape_timeout: 10s
+      metrics_path: /metrics
+      scheme: http
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - {{ .Release.Namespace }}
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_service_label_app]
+        separator: ;
+        regex: realm-object-server
+        replacement: $1
+        action: keep
+      - source_labels: [__meta_kubernetes_endpoint_port_name]
+        separator: ;
+        regex: internal
+        replacement: $1
+        action: keep
+      - source_labels: [__meta_kubernetes_namespace]
+        separator: ;
+        regex: (.*)
+        target_label: namespace
+        replacement: $1
+        action: replace
+      - source_labels: [__meta_kubernetes_pod_name]
+        separator: ;
+        regex: (.*)
+        target_label: pod
+        replacement: $1
+        action: replace
+      - source_labels: [__meta_kubernetes_service_name]
+        separator: ;
+        regex: (.*)
+        target_label: service
+        replacement: $1
+        action: replace
+      - source_labels: [__meta_kubernetes_service_name]
+        separator: ;
+        regex: (.*)
+        target_label: job
+        replacement: ${1}
+        action: replace
+      - source_labels: [__meta_kubernetes_pod_label_component]
+        separator: ;
+        regex: (.+)
+        target_label: component
+        replacement: ${1}
+        action: replace
+      - separator: ;
+        regex: (.*)
+        target_label: endpoint
+        replacement: internal
+        action: replace
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-prometheus
+  labels:
+    app: prometheus
+    chart: {{ template "realm-object-server.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: prometheus
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        release: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ .Release.Name }}-prometheus
+      initContainers:
+      - name: init-chown-data
+        image: busybox:latest
+        imagePullPolicy: IfNotPresent
+        # 65534 is the nobody user that prometheus uses.
+        command: ["chown", "-R", "65534:65534", "/data"]
+        volumeMounts:
+        - name: storage-volume
+          mountPath: /data
+      containers:
+        - name: configmap-reload
+          image: jimmidyson/configmap-reload:v0.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - --volume-dir=/etc/config
+            - --webhook-url=http://localhost:9090/-/reload
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+        - name: prometheus
+          image: prom/prometheus:v2.2.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - --storage.tsdb.retention=3d
+            - --config.file=/etc/config/prometheus.yml
+            - --storage.tsdb.path=/data
+            - --web.console.libraries=/etc/prometheus/console_libraries
+            - --web.console.templates=/etc/prometheus/consoles
+            - --web.enable-lifecycle
+          ports:
+            - containerPort: 9090
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          resources:
+{{ toYaml .Values.prometheus.resources | indent 12 }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+            - name: storage-volume
+              mountPath: /data
+    {{- if .Values.prometheus.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.prometheus.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.prometheus.tolerations }}
+      tolerations:
+{{ toYaml .Values.prometheus.tolerations | indent 8 }}
+    {{- end }}
+    {{- if .Values.prometheus.affinity }}
+      affinity:
+{{ toYaml .Values.prometheus.affinity | indent 8 }}
+    {{- end }}
+      terminationGracePeriodSeconds: 300
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Release.Name }}-prometheus
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-prometheus
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-prometheus
+  labels:
+    app: prometheus
+    chart: {{ template "realm-object-server.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+  selector:
+    app: prometheus
+    release: {{ .Release.Name }}
+{{- end }}

@@ -1,0 +1,22 @@
+{{- $release := .Release -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  public.pem: {{ toYaml .Values.publicKey | indent 4 }}
+  core-services.yaml: |-
+{{ toYaml .Values.coreServices.config | indent 4 }}
+  discovery.yaml: |-
+    sync:
+    {{- range .Values.sync.syncWorkers }}
+      {{ .name }}: http://{{ $release.Name }}-sync-{{ .name }}:7800
+    {{- end }}
+    default: http://localhost:9080
+    # realms: http://{{ .Release.Name }}-sync-default:9080
