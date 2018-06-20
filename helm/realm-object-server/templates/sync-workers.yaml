@@ -117,7 +117,7 @@ spec:
             - name: SYNC_WORKER_MAX_DOWNLOAD_SIZE
               value: {{ .maxDownloadSize | $values.sync.maxDownloadSize | quote }}
             - name: SYNC_WORKER_FEATURE_TOKEN
-              value: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJSZWFsbSIsIkFkYXB0ZXIiOnRydWUsIkJhY2t1cCI6dHJ1ZSwiTG9hZEJhbGFuY2luZyI6dHJ1ZSwiTm90aWZpZXIiOnRydWUsIlN5bmMiOnRydWUsImlhdCI6MTUyMzM4NTYyMn0.VUdvtt9B7L6GK0IbYx1izDfdKNiAf2tHcycMlBl6rLtgqhSLds40MyW8J-7l2SXjGy0eGrHI7DliJ-SdiCiaC1ln-GkqFbwcjHpZ498iEOYNOjK_z6nVuoc8GQdYpRlXeGs8lc3yuMGYJeFX5eRjg7Gp0GZ8DCFFq4f4otAqAtjMoSyACXVNdoTeXmYb90zHA_7hGtwF8CgYlzQEvcdl9EeW9gB4wjjL2TbxyiiR-Stv56rXBwtx2DtYQPpDBko-vM9NaDkBodkP5cRYRKAAvphuuSRV9xSF01Aibw-9QneD08P6QiVfAx_EJ683Ui_SPU9L0Dq6M0ZQHB6BFsDNOw
+              value: <INSERT_FEATURE_TOKEN_HERE>
             - name: LOG_LEVEL
               value: {{ .logLevel | $values.sync.logLevel }}
           command:

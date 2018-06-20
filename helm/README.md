@@ -40,6 +40,10 @@ On macOS:
 
 Other: [Installing Helm](https://docs.helm.sh/using_helm/#installing-helm)
 
+### Insert Feature Token
+
+In sync-workers.yaml insert your feature token underneath SYNC_WORKER_FEATURE_TOKEN.
+
 ### Install Tiller and Kubernetes Dashboard (if using Docker for Mac as a cluster)
 
 If you're using Docker for Mac or an otherwise new cluster, you need to install tiller in the cluster:
