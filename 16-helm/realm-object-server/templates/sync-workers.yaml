@@ -1,0 +1,215 @@
+{{- $release := .Release -}}
+{{- $appName := include "realm-object-server.name" . -}}
+{{- $chartName := include "realm-object-server.chart" . -}}
+{{- $values := .Values }}
+{{- range .Values.sync.syncWorkers }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $release.Name }}-sync-{{ .name }}
+  labels:
+    app: {{ $appName }}
+    chart: {{ $chartName }}
+    release: {{ $release.Name }}
+    heritage: {{ $release.Service }}
+    component: sync
+    group: {{ .name }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ $release.Name }}-sync-{{ .name }}
+  labels:
+    app: {{ $appName }}
+    chart: {{ $chartName }}
+    release: {{ $release.Name }}
+    heritage: {{ $release.Service }}
+    component: sync
+    group: {{ .name }}
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs:
+    - get
+- apiGroups: [""]
+  resources: ["endpoints"]
+  resourceNames:
+    - {{ $release.Name }}-sync-{{ .name }}
+  verbs:
+    - get
+    - patch
+    - watch
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs:
+    - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $release.Name }}-sync-{{ .name }}
+  labels:
+    app: {{ $appName }}
+    chart: {{ $chartName }}
+    release: {{ $release.Name }}
+    heritage: {{ $release.Service }}
+    component: sync
+    group: {{ .name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ $release.Name }}-sync-{{ .name }}
+subjects:
+- kind: ServiceAccount
+  name: {{ $release.Name }}-sync-{{ .name }}
+  namespace: {{ $release.Namespace }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $release.Name }}-sync-{{ .name }}
+  labels:
+    app: {{ $appName }}
+    chart: {{ $chartName }}
+    release: {{ $release.Name }}
+    heritage: {{ $release.Service }}
+    component: sync
+    group: {{ .name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ $appName }}
+      release: {{ $release.Name }}
+      component: sync
+      group: {{ .name }}
+  serviceName: swg
+  replicas: {{ .replicas | default "1" }}
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ $appName }}
+        release: {{ $release.Name }}
+        component: sync
+        group: {{ .name }}
+    spec:
+      serviceAccountName: {{ $release.Name }}-sync-{{ .name }}
+      containers:
+        - name: sync-worker
+          image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          env:
+            # The sync worker always belongs to a service
+            - name: SYNC_WORKER_SERVICE_NAME
+              value: {{ $release.Name }}-sync-{{ .name }}
+            - name: PUBLIC_KEY_PATH
+              value: /config/public.pem
+            - name: SYNC_WORKER_GROUP
+              value: {{ .name }}
+            - name: SYNC_WORKER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: SYNC_WORKER_ENABLE_DOWNLOAD_LOG_COMPACTION
+              value: {{ .enableDownloadLogCompaction | $values.sync.enableDownloadLogCompaction | quote }}
+            - name: SYNC_WORKER_MAX_DOWNLOAD_SIZE
+              value: {{ .maxDownloadSize | $values.sync.maxDownloadSize | quote }}
+            - name: SYNC_WORKER_FEATURE_TOKEN
+              value: <INSERT_FEATURE_TOKEN_HERE>
+            - name: LOG_LEVEL
+              value: {{ .logLevel | $values.sync.logLevel }}
+          command:
+            - node
+            - ./dist/KubernetesSyncWorkerGroup.js
+          ports:
+            - name: internal
+              containerPort: 9081
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 1
+            httpGet:
+              path: /healthz
+              port: internal
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config
+            - name: secrets
+              mountPath: /secret
+          resources:
+{{ toYaml .resources | default $values.sync.resources | indent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ $release.Name }}
+        - name: secrets
+          secret:
+            secretName: {{ $release.Name }}
+    {{- with .nodeSelector | default $values.sync.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .affinity | default $values.sync.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .tolerations | default $values.sync.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: {{ $release.Name }}-sync-{{ .name }}
+  labels:
+    app: {{ $appName }}
+    chart: {{ $chartName }}
+    release: {{ $release.Name }}
+    heritage: {{ $release.Service }}
+    component: sync
+    group: {{ .name }}
+  annotations:
+    sync.realm.io/group: {{ .name }}
+subsets: []
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $release.Name }}-sync-{{ .name }}
+  labels:
+    app: {{ $appName }}
+    chart: {{ $chartName }}
+    release: {{ $release.Name }}
+    heritage: {{ $release.Service }}
+    component: sync
+    group: {{ .name }}
+spec:
+  ports:
+    - port: 7800
+      targetPort: sync
+      protocol: TCP
+      name: sync
+    - port: 9080
+      targetPort: http
+      protocol: TCP
+      name: http
+  # By not defining a selector, we use our own managed endpoints resource above
+  # selector: {}
+{{- end }}
