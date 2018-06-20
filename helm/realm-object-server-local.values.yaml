@@ -1,0 +1,22 @@
+# This values file is suitable for local development using Docker for Mac.
+# ROS will be available at http://127.0.0.1:30080
+# Grafana is available at http://127.0.0.1:30081
+
+service:
+  type: NodePort
+  nodePort: 30080
+
+prometheus:
+  enabled: true
+
+grafana:
+  enabled: true
+  service:
+    type: NodePort
+    nodePort: 30081
+
+# If you're building ROS locally...
+image:
+  repository: realm-object-server
+  tag: latest
+  pullPolicy: Never

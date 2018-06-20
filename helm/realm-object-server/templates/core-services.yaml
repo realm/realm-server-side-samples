@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-realm-object-server
+  labels:
+    app: {{ template "realm-object-server.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: core
+spec:
+  replicas: {{ .Values.coreServices.replicas }}
+  selector:
+    matchLabels:
+      app: {{ template "realm-object-server.name" . }}
+      release: {{ .Release.Name }}
+      component: core
+  template:
+    metadata:
+      labels:
+        app: {{ template "realm-object-server.name" . }}
+        release: {{ .Release.Name }}
+        component: core
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - name: realm-object-server
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - node
+            - ./dist/KubernetesCoreServices.js
+          env:
+            - name: PUBLIC_KEY_PATH
+              value: /config/public.pem
+            - name: PRIVATE_KEY_PATH
+              value: /secret/private.pem
+            - name: DISCOVERY_CONFIG_PATH
+              value: /config/discovery.yaml
+          ports:
+            - name: http
+              containerPort: 9080
+              protocol: TCP
+            - name: internal
+              containerPort: 9081
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: internal
+          resources:
+{{ toYaml .Values.coreServices.resources | indent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: secrets
+              mountPath: /secret
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}
+        - name: secrets
+          secret:
+            secretName: {{ .Release.Name }}
+    {{- with .Values.coreServices.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.coreServices.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.coreServices.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

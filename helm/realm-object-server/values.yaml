@@ -1,0 +1,179 @@
+# Default values for realm-object-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Public key for Realm Object Server.  This is used for verifying tokens
+# in the ROS ecosystem.
+# DO NOT USE THIS VALUE FOR PRODUCTION
+publicKey: |-
+  -----BEGIN PUBLIC KEY-----
+  MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArVUr/tnCqAfZPaKYmtHp
+  tpNhKkDZRWBKM5yZpeXuLvRS/bjuZnlBFqyNMMFymhgy1qh+34/5lRRusW8WlYrE
+  gY8Gmcbq0N6Nn+UihTPFd8hMyjmVAS08b+l70tcqYcyquWJjHVpDWYckpXsvfRRE
+  J6OjsWnVGqkWYEBSMqEFEiXnQ8HylbKNz3lqcfAb+RMf50qgwShZvyNapLFilmwg
+  OhYlkkHkTlyVE7TY9pX5dHBOIrpnnskuDyG1HbGemM5yRLMyNwbW0utIe7lyCU+j
+  it/9ElWnPdR/+QAmc11tBhh/fqoRDeCBEmNRDOybBg1JwVlXfIkrqznLwBJXBorm
+  YQIDAQAB
+  -----END PUBLIC KEY-----
+
+# Private key for Realm Object Server.  This is used for signing tokens,
+# primarily by the Auth service.
+# DO NOT USE THIS VALUE FOR PRODUCTION
+# TODO: add generation instructions
+privateKey: |-
+  -----BEGIN RSA PRIVATE KEY-----
+  MIIEpAIBAAKCAQEArVUr/tnCqAfZPaKYmtHptpNhKkDZRWBKM5yZpeXuLvRS/bju
+  ZnlBFqyNMMFymhgy1qh+34/5lRRusW8WlYrEgY8Gmcbq0N6Nn+UihTPFd8hMyjmV
+  AS08b+l70tcqYcyquWJjHVpDWYckpXsvfRREJ6OjsWnVGqkWYEBSMqEFEiXnQ8Hy
+  lbKNz3lqcfAb+RMf50qgwShZvyNapLFilmwgOhYlkkHkTlyVE7TY9pX5dHBOIrpn
+  nskuDyG1HbGemM5yRLMyNwbW0utIe7lyCU+jit/9ElWnPdR/+QAmc11tBhh/fqoR
+  DeCBEmNRDOybBg1JwVlXfIkrqznLwBJXBormYQIDAQABAoIBADhMzPCHfMGlYvux
+  H45SFm62Kj5WN/xfzVo8SG/pYlcgBwDgm5bvVaPuwiGPBBFnQMQWkLc/BZtVuqqp
+  YZWLME7AzS0Pvl+/mhLQk0jeywogJkkdMPfj4JidJxoRx3NiziVO/tCe6/ddfRq/
+  C2q+NXEGpvnOXWi+eUUkP06wnHwLCN4TJryTd239YDvtNHnH6uQpqwFttXVqF5rK
+  BodI7XyVT8TIJ2gsQpcUpxbf4t3CjlKHXM7tFeqYq5awxVVoRBQxIP4LXsR3yqDt
+  xiE9BkcxLlZFwgLefP6Uw1keNygYTzscGyZQi9L3AKwm6fLsQFk6H+B7BTViURu2
+  2l3Tap0CgYEA0yu/fhS5n8UH85lSb/nU0trH3Ult8ziOYx0c907LMgKpjD8tyjoz
+  8JftwzNZ/FEha4v/Pa+VOqWzaJHGaAvitjqJCf3xWlzvRZ0jnUxTQ249Ka6OrAPd
+  WW2GRJUmdG0/M7ivezE4/Thoddh/hH33P3XMROMXLW/n13smBM5aBYcCgYEA0iET
+  uhQDZ48qcoNbgudqNle0EZBr0rw5SqS/X17F/26Hwv5wi1xhLh5LtP5/1M57m/hs
+  TfL6/Cidc4HAncS9JspBYJluznHjiXHy0PY9hthrGjTEGowDfbKA926qayRh3FWU
+  JM+0tL5YkXJdmN9ksBHFmy9N0n/4juBr23D+LtcCgYAwACTCExHyqEXbcIGVpHNl
+  DogZ2+QbQkLTcr2v1YBIuOQzVfUhn8NIsDBCi7yrpwFywdrd+bhxIVM7tM8lvXXm
+  OD4IQGoJQVC+QS7kRYIztK5AeEZEAYjiGAxKMKESG/ce2Z9B4Hl0zcqo5vJtenim
+  Oy+YhQoysNpBV+PXedRqpwKBgQDRgQUoG9ghIo7RycItzAkL0XnJoVK/s8bzczsT
+  HW0P9eYKNqGDcUG7N52IAc72IEECCzgAp+gyDVSe25luM7/bswBoDdJ6pvaUDTZp
+  vXkuvwxZ/o4fYcYBRz5qdL4ZQRcJFZI0+ZpUMwwfSAWl6+V53t5EkW9oFwt9eKhR
+  DGGB1QKBgQCVtt+PI0lbNPavQO2vKBceJKTrS+Xqg4rgvtB7ZJgWw+nX4WjeW13D
+  j9wRmpsT46HY8eGb1qxTYtrHOxXlr34ihrwWTSvp8vj07hSaE7oryC/J0FZKdrQo
+  YhKD4suipY4dEloxJW1WBgM6+KpKoCBzv9Sz+z/Dl3TCEQUeaTDHbA==
+  -----END RSA PRIVATE KEY-----
+
+# Sync configuration
+sync:
+  # A list of sync workers. The first, named default, is required.
+  syncWorkers:
+    - name: default
+      replicas: 1
+    # Example of extra sync worker groups:
+    # - name: alpha
+    # - name: bravo
+  logLevel: info
+  enableDownloadLogCompaction: "true"
+  maxDownloadSize: 16777216 # in bytes (16MB default)
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+
+coreServices:
+  # Number of Core Services Pods to run
+  # TODO: test using a value higher than 1
+  replicas: 1
+
+  # The service configuration passed to core-services. It is
+  # formatted as a list of services with any configuration
+  # values they might need.
+  config:
+    SyncProxyService: {}
+    RealmDirectoryService: {}
+    AuthService:
+      enableRuntimeConfiguration: true
+      defaultProviders:
+        - name: password
+          type: PasswordAuthProvider
+          config:
+            autoCreateAdminUser: true
+    LogService: {}
+    HealthService: {}
+    WelcomeService: {}
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Defines the location, version and pull policy for our images.
+image:
+  repository: realm/realm-object-server
+  tag: latest
+  pullPolicy: Always
+
+# Configures the service used to access ROS
+service:
+  type: ClusterIP
+  port: 80
+  annotations: {}
+
+# When enabled, configures an ingress resource
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /
+  hosts:
+    - chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+prometheus:
+  enabled: false
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+grafana:
+  enabled: false
+  server:
+    adminPassword: admin
+  service:
+    type: ClusterIP
+    port: 80
+    annotations: {}
+  ingress:
+    enabled: false
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    path: /
+    hosts:
+      - chart-example.local
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+    
