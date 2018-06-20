@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "realm-object-server.fullname" . }}
+  labels:
+    app: {{ template "realm-object-server.name" . }}
+    chart: {{ template "realm-object-server.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- with .Values.service.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if .Values.service.nodePort }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
+  selector:
+    app: {{ template "realm-object-server.name" . }}
+    release: {{ .Release.Name }}
+    component: core
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-metrics
+  labels:
+    app: {{ template "realm-object-server.name" . }}
+    chart: {{ template "realm-object-server.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+    - port: 9081
+      targetPort: internal
+      protocol: TCP
+      name: internal
+  selector:
+    app: {{ template "realm-object-server.name" . }}
+    release: {{ .Release.Name }}
