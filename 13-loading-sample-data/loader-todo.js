@@ -7,9 +7,9 @@ var randomWords = require('random-words');
 var totalitems = 10
 
 //insert the your connection information  
-const URL = 'awesome-soft-shoes.us1a.cloud.realm.io';
-const username = 'realm-admin';
-const password = 'password';
+const URL = '<cloud_url>.us1a.cloud.realm.io';
+const username = 'USERNAME';
+const password = 'PASSWORD';
 const myProjectName = 'Task List'
 
 const Item = {
