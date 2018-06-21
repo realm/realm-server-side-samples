@@ -7,7 +7,9 @@ var randomWords = require('random-words');
 var totalitems = 10
 
 //insert the your connection information  
-const URL = '<cloud_url>.us1a.cloud.realm.io';
+//for self-hosting: 'http:<ip_address>:port' 
+//for cloud: 'http:<instance_address>'
+const URL = 'https://<server_url>';
 const username = 'USERNAME';
 const password = 'PASSWORD';
 const myProjectName = 'Task List'
@@ -40,7 +42,7 @@ const errorCallback = function errorCallback(message, isFatal, category, code) {
 }
 
 
-Realm.Sync.User.login(`https://${URL}`, username, password)
+Realm.Sync.User.login(`${URL}`, username, password)
 .then((user) => {
       let config = user.createConfiguration();
       config.schema = [Item, Project];
