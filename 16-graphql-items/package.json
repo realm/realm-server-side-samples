@@ -1,0 +1,29 @@
+{
+  "name": "graphqlllll",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "rm -rf dist; ./node_modules/.bin/tsc",
+    "clean": "rm -rf dist",
+    "start": "npm run build && node dist/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-client-preset": "^1.0.8",
+    "apollo-link-ws": "^1.0.8",
+    "cross-fetch": "^2.2.0",
+    "graphql": "^0.13.2",
+    "node-fetch": "^2.1.2",
+    "realm": "^2.6.0",
+    "realm-graphql-client": "^1.1.1",
+    "subscriptions-transport-ws": "^0.9.9",
+    "ws": "^5.1.1"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^1.6.9",
+    "@types/ws": "^5.1.1",
+    "typescript": "^2.8.3"
+  }
+}
