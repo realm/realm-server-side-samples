@@ -10,14 +10,11 @@ import { getMainDefinition } from 'apollo-utilities';
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloClient } from 'apollo-client';
 import gql from 'graphql-tag';
-
-const username = "realm-admin";
-const password = "password";
-const serverUrl = "awesome-soft-shoes.us1a.cloud.realm.io";
+import * as constants from './constants';
 
 async function testGraphQL() {
-    const credentials = Credentials.usernamePassword(username, password);
-    const user = await User.authenticate(credentials, `https://${serverUrl}`);
+    const credentials = Credentials.usernamePassword(constants.username, constants.password);
+    const user = await User.authenticate(credentials, `https://${constants.serverUrl}`);
 
     const config = await GraphQLConfig.create( 
         user,
