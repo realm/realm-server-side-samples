@@ -2,7 +2,15 @@
 exports.__esModule = true;
 var realm_object_server_1 = require("realm-object-server");
 var path = require("path");
+const { GraphQLService } = require("realm-graphql-service");
+
 var server = new realm_object_server_1.BasicServer();
+
+server.addService(new GraphQLService({
+    // Turn this off in production!
+    disableAuthentication: true
+}));
+
 server.start({
     // For all the full list of configuration parameters see:
     // https://realm.io/docs/realm-object-server/latest/api/ros/interfaces/serverconfig.html
