@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "outDir": "./built",
+        "allowJs": true,
+        "target": "es6",
+        "module": "commonjs",
+        "moduleResolution": "Node"
+    },
+    "files": [
+        "src/kafka-consumer.ts",
+        "src/realm-merge.ts",
+        "test/test-merge.ts",
+        "samples/sample-consumer.ts"
+    ]
+}
