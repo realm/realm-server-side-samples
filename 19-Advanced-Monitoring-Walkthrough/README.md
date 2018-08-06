@@ -1,0 +1,1 @@
+These files can be used in conjunction with our advanced monitoring guide which availabled at https://docs.realm.io/platform/self-hosted/manage/advanced-monitoring
