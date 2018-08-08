@@ -1,6 +1,6 @@
 # Kafka Consumer
 
-This is configurable Kafka Consumer for Realm. It can handle any type of Kafka stream, you only have to supply a mapping function that converts the Kafka message into a standard `Update` format. The consumer will then handle consuming the stream of messages and integrating the data into the target realm, handling both merging and cleanup of unused objects automatically.
+This is a configurable Kafka Consumer for Realm. It can handle any type of Kafka stream, you only have to supply a mapping function that converts the Kafka message into a standard `Update` format. The consumer will then handle consuming the stream of messages and integrating the data into the target realm, handling both merging and cleanup of unused objects automatically.
 
 Top level objects need primary keys to be indentifiable, but sub-objects are handled even if they do not have primary keys (so it can handle hierarchical groups of objects like in JSON documents).
 

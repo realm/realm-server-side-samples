@@ -53,7 +53,7 @@ export class KafkaConsumer {
     async start() {
         const s = this.settings;
 
-        //Login to realm with admin access
+        // Login to realm with admin access
         const user = await Realm.Sync.User.login("https://" + s.instance, s.username, s.password);
         console.log("Logged in user " + s.username);
 
@@ -118,22 +118,45 @@ export class KafkaConsumer {
         // Create an instance of the Kafka consumer
         // If the offset is set to null, we will just start listening for new messages, otherwise we
         // will start from the specified offset
-        const client   = new Kafka.Client(this.settings.kafkaHost);
-        const consumer = (kafkaState.offset === null)
-                        ? new Kafka.Consumer(client, [{ topic: s.kafkaTopic, partition: s.kafkaPartition}], {})
-                        : new Kafka.Consumer(client, [{ topic: s.kafkaTopic, partition: s.kafkaPartition, offset: kafkaState.offset}], {fromOffset: true});
-
-        if (kafkaState.offset === null) {
-            console.log("Waiting for new messages...");
-        }
-        else {
-            console.log("Waiting for messages... Starting from offset " + kafkaState.offset);
-        }
-
-        consumer.on('message', function (message) {
-            console.log("Receiving msg:", message);
-            this.handleMsg(realm, kafkaState, message);
+        const client   = new Kafka.Client(s.kafkaHost);
+        client.on('ready', function () {
+            console.log('Kafka client connected to:', s.kafkaHost);
         });
+
+        // Get the latest offset
+        const offset = new Kafka.Offset(client);
+        offset.fetchLatestOffsets([s.kafkaTopic], (error, offsets) => {
+            if (error) {
+                console.log("fetchLatestOffsets error:", error);
+                return;
+            }
+            const latestOffset = offsets[s.kafkaTopic][s.kafkaPartition];
+            console.log("Latest offset for '", s.kafkaTopic , "':", latestOffset);
+            
+            this.consume(realm, client, kafkaState, latestOffset);
+        });
+    }
+
+    consume(realm: Realm, client: Kafka.Client, state: KafkaState, latestOffset: number) {
+        const s = this.settings;
+
+        const offset = (state.offset === null) ? latestOffset : state.offset;
+        const consumer = new Kafka.Consumer(client, [{ topic: s.kafkaTopic, partition: s.kafkaPartition, offset: offset }], { fromOffset: true });
+        
+        consumer.on('error', function (err) {
+            console.log("Kafka Error: Consumer - " + err);
+        });
+
+        consumer.on('offsetOutOfRange', function (err) {
+            console.log(err);
+        });
+
+        consumer.on('message', (message) => {
+            console.log("Receiving msg:", message);
+            this.handleMsg(realm, state, message);
+        });
+
+        console.log("Waiting for messages... Starting from offset " + offset);
     }
 
     handleMsg(realm: Realm, state: KafkaState, message: Kafka.Message) {
