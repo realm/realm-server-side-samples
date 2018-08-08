@@ -44,7 +44,7 @@ const settings: KafkaConsumerSettings = {
     kafkaHost:  'localhost:2181',
     kafkaTopic: 'topic1',
     kafkaPartition: 0,
-    KafkaStartOffset: 0,
+    KafkaStartOffset: null, // 'null' means start from latest
 
     mapper: mapMsgToRealm
 }
