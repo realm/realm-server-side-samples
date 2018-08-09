@@ -10,6 +10,7 @@
         "src/kafka-consumer.ts",
         "src/realm-merge.ts",
         "test/test-merge.ts",
-        "samples/sample-consumer.ts"
+        "samples/sample-consumer.ts",
+        "test/test-att-mapping.ts"
     ]
 }
