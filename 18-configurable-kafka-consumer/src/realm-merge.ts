@@ -57,6 +57,27 @@ function getPrimaryKeyName(realm: Realm, className: string): string {
     return pkName;
 }
 
+function datesEqual(first: Date, second: Date): boolean {
+    try {
+        if (first === null || second === null) {
+            return first === second;
+        }
+
+        if (!(first instanceof Date)) {
+            first = new Date(first);
+        }
+
+        if (!(second instanceof Date)) {
+            second = new Date(second);
+        }
+
+        return first.getTime() === second.getTime();
+    }
+    catch (err) {
+        return false;
+    }
+}
+
 
 function addOrUpdateObject(realm: Realm, className: string, update: {[propName: string]: any}): {} {
     const objectSchema = realm.schema.find((s) => s.name === className);
@@ -141,7 +162,7 @@ function addOrUpdateObject(realm: Realm, className: string, update: {[propName: 
                     }
                     break;
                 case 'date':
-                    if (!this.datesEqual(obj[propertyName], propValue)) {
+                    if (!datesEqual(obj[propertyName], propValue)) {
                         obj[propertyName] = propValue;
                     }
                     break;
@@ -252,7 +273,7 @@ function updateRecursive(realm: Realm, realmObj: Realm.Object, propertyName: str
             case 'list':
                 break;
             case 'date':
-                if (!this.datesEqual(obj[propertyName], updateObj[propertyName])) {
+                if (!datesEqual(obj[propertyName], updateObj[propertyName])) {
                     realmObj[propertyName] = updateObj[propertyName];
                 }
                 break;
@@ -333,7 +354,7 @@ function updateListRefs(realm: Realm, realmList: Realm.List<any>, updateObjs: (s
     if (realmList.type !== 'object') {
         throw new Error('updates on lists of literals not supported yet');
     }
-    
+
     // Get the name of primary key property for the target objs
     const pkeyName = realm.schema.find((s) => s.name === typeName).primaryKey;
 
@@ -363,3 +384,4 @@ function updateListRefs(realm: Realm, realmList: Realm.List<any>, updateObjs: (s
         }
     }
 }
+
