@@ -17,7 +17,7 @@ export interface KafkaConsumerSettings {
     schema?:     Realm.ObjectSchema[] | null; // schema for the target realm (can be null if realm already exists)
     useSSL:      boolean;    // i.e. 'true' for cloud
 
-    kafkaHost:         string;  // i.e. "localhost:2181"
+    kafkaHost:         string;  // i.e. "localhost:2181" (multiple zookeeper instances can be added if separated with ;)
     kafkaTopic:        string;  // i.e. "kafkaTest"
     kafkaPartition?:   number;  // default to partition 0
     KafkaStartOffset?: number;  // null to start with latest, set to 0 to replay from start
