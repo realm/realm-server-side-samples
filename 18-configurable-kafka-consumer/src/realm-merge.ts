@@ -100,12 +100,20 @@ function addOrUpdateObject(realm: Realm, className: string, update: {[propName: 
             const prop = objectSchema.properties[propertyName] as Realm.ObjectSchemaProperty;
             switch (prop.type) {
                 case 'object':
-                    if (update[propertyName] !== null) {
+                    if (propValue !== null) {
                         updateObjRef(realm, obj, update, propertyName);
                     }
                     break;
                 case 'list':
-                    break; // TODO: add list support
+                    if (propValue === null) { break; } // list stays empty
+
+                    if (!(propValue instanceof Array)) {
+                        throw new Error('value supplied for list property is not an array');
+                    }
+
+                    const realmList = obj[propertyName];
+                    updateListRefs(realm, realmList, propValue, prop.objectType);
+                    break; 
                 default:
                     break;
             }
@@ -114,8 +122,8 @@ function addOrUpdateObject(realm: Realm, className: string, update: {[propName: 
     else {
         for (const property of Reflect.ownKeys(objectSchema.properties)) {
             const propertyName = property.toString();
-            const updateObj = update[propertyName];
-            if (updateObj === undefined) { continue; }
+            const propValue = update[propertyName];
+            if (propValue === undefined) { continue; }
 
             const prop = objectSchema.properties[propertyName] as Realm.ObjectSchemaProperty;
             switch (prop.type) {
@@ -123,15 +131,23 @@ function addOrUpdateObject(realm: Realm, className: string, update: {[propName: 
                     updateObjRef(realm, obj, update, propertyName);
                     break;
                 case 'list':
-                    break;  // TODO: add list support
+                    const realmList = obj[propertyName];
+                    
+                    if (propValue === null) {
+                        updateListRefs(realm, realmList, [], prop.objectType);
+                    }
+                    else {
+                        updateListRefs(realm, realmList, propValue, prop.objectType);
+                    }
+                    break;
                 case 'date':
-                    if (!this.datesEqual(obj[propertyName], update[propertyName])) {
-                        obj[propertyName] = update[propertyName];
+                    if (!this.datesEqual(obj[propertyName], propValue)) {
+                        obj[propertyName] = propValue;
                     }
                     break;
                 default:
-                    if (update[propertyName] !== obj[propertyName]) {
-                        obj[propertyName] = update[propertyName];
+                    if (propValue !== obj[propertyName]) {
+                        obj[propertyName] = propValue;
                     }
                     break;
             }
@@ -258,7 +274,7 @@ function updateObjRef(realm: Realm, realmObj: Realm.Object, updateObj: {}, prope
     const pkeyName = realm.schema.find((s) => s.name === prop.objectType).primaryKey;
 
     // object references can be specified via their primary key
-    // If this is the case we need to apply them in a second phase
+    // If this is the case we may need to apply them in a second phase
     // (since the target object may not exist yet)
     if (typeof newTarget === 'string') {
         if (pkeyName === undefined) {
@@ -309,6 +325,41 @@ function updateObjRef(realm: Realm, realmObj: Realm.Object, updateObj: {}, prope
             if (oldTarget === null || oldTarget[pkeyName] !== newTarget[pkeyName]) {
                 realmObj[propertyName] = targetObj;
             }
+        }
+    }
+}
+
+function updateListRefs(realm: Realm, realmList: Realm.List<any>, updateObjs: (string|{})[], typeName: string) {
+    if (realmList.type !== 'object') {
+        throw new Error('updates on lists of literals not supported yet');
+    }
+    
+    // Get the name of primary key property for the target objs
+    const pkeyName = realm.schema.find((s) => s.name === typeName).primaryKey;
+
+    if (pkeyName === undefined) {
+        throw new Error('updates only supported on lists of objects with primary keys');
+    }
+
+    // First clear all the old references (this will not delete the referenced objects)
+    realm.delete(realmList);
+
+    // Then add the new objects
+    for (let i = 0; i < updateObjs.length; i++) {
+        const upd = updateObjs[i];
+
+        if (typeof upd === 'string') {
+            // Check if target obj already exists
+            const obj = realm.objectForPrimaryKey(typeName, upd);
+            if (obj === undefined) {
+                throw new Error('Could not find object to match type: ' + typeName + ' primaryKey: ' + upd);
+            }
+
+            realmList.push(obj);
+        }
+        else {
+            const obj = addOrUpdateObject(realm, typeName, upd);
+            realmList.push(obj);
         }
     }
 }
