@@ -40,6 +40,7 @@ const settings: KafkaConsumerSettings = {
     password:   'test',
     realmPath:  '/kafkaMsgRealm',
     schema:     [msgSchema],
+    useSSL:     true,
 
     kafkaHost:  'localhost:2181',
     kafkaTopic: 'topic1',
