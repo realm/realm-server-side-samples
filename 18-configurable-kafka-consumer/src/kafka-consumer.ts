@@ -15,6 +15,7 @@ export interface KafkaConsumerSettings {
     password:    string;     // i.e. "password"
     realmPath:   string;     // i.e. "/kafkaRealm"
     schema?:     Realm.ObjectSchema[] | null; // schema for the target realm (can be null if realm already exists)
+    useSSL:      boolean;    // i.e. 'true' for cloud
 
     kafkaHost:         string;  // i.e. "localhost:2181"
     kafkaTopic:        string;  // i.e. "kafkaTest"
@@ -53,11 +54,14 @@ export class KafkaConsumer {
     async start() {
         const s = this.settings;
 
-        // Login to realm with admin access
-        const user = await Realm.Sync.User.login("https://" + s.instance, s.username, s.password);
-        console.log("Logged in user " + s.username);
+        const protocol = s.useSSL ? "s://" : "://";
+        const authURL  = "http"  + protocol + s.instance;
+        const realmURL = "realm" + protocol + s.instance + s.realmPath;
 
-        const realmURL = "realms://" + s.instance + s.realmPath;
+        // Login to realm with admin access
+        console.log("Connecting to Realm server: " + s.instance);
+        const user = await Realm.Sync.User.login(authURL, s.username, s.password);
+        console.log("Logged in user " + s.username);
 
         let realm: Realm = null;
 

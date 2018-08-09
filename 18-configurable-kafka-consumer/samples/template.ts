@@ -20,6 +20,7 @@ const settings: KafkaConsumerSettings = {
     password:   'test',
     realmPath:  '/kafkaRealm',
     schema:     null, // no schema needed if realm already exist
+    useSSL:     true,
 
     kafkaHost:  'localhost:2181',
     kafkaTopic: 'topic1',
