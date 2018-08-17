@@ -14,7 +14,7 @@ export default class TicTacToeBoard extends React.Component {
   }
 
   componentWillMount() {
-    Realm.Sync.User.login('https://jarjar6.us1.cloud.realm.io', 'REPALCE_ME_USER', 'REPLACE_ME_PASSWORD').then(user => {
+    Realm.Sync.User.login('https://REPLACE_ME.cloud.realm.io', 'REPLACE_ME_USER', 'REPLACE_ME_PASSWORD').then(user => {
       Realm.open({
         schema: [GameSchema],
         sync: {
