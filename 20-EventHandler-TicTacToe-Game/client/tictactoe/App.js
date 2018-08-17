@@ -44,49 +44,18 @@ export default class TicTacToeBoard extends React.Component {
     let gameSchemas = this.state.realm.objects('GameState');
     if (gameSchemas.length < 1) {
       this.state.realm.write(() => {
-        let game = this.state.realm.create('GameState', {});
-        this.setPlayerMove(game, position);
+        let game = this.state.realm.create('GameState', {
+          cells: [0,0,0,0,0,0,0,0,0]
+        });
+        game.cells[position] = 1;
       });
     } else {
       // check if the move is allowed (i.e ignore clicks on already set cells)
-      let cell = this.findCellFromPosition(gameSchemas[0], position);
-      if (cell == 0) {
+      if (gameSchemas[0].cells[position] === 0) {
         this.state.realm.write(() => {
-          this.setPlayerMove(gameSchemas[0], position);
+          this.state.currentGame.cells[position] = 1;
         });
       }
-    }
-  }
-
-  setPlayerMove(game, position) {
-    switch (position) {
-      case 0:
-        game.cell_0_0 = 1;
-        break;
-      case 1:
-        game.cell_1_0 = 1;
-        break;
-      case 2:
-        game.cell_2_0 = 1;
-        break;
-      case 3:
-        game.cell_0_1 = 1;
-        break;
-      case 4:
-        game.cell_1_1 = 1;
-        break;
-      case 5:
-        game.cell_2_1 = 1;
-        break;
-      case 6:
-        game.cell_0_2 = 1;
-        break;
-      case 7:
-        game.cell_1_2 = 1;
-        break;
-      case 8:
-        game.cell_2_2 = 1;
-        break;
     }
   }
 
@@ -94,49 +63,7 @@ export default class TicTacToeBoard extends React.Component {
     if (game === undefined) {
       return require('./empty.png');
     }
-    switch (position) {
-      case 0:
-        return game.cell_0_0 === 1 ? require('./player1.png') : game.cell_0_0 === 2 ? require('./player2.png') : require('./empty.png');
-      case 1:
-        return game.cell_1_0 === 1 ? require('./player1.png') : game.cell_1_0 === 2 ? require('./player2.png') : require('./empty.png');
-      case 2:
-        return game.cell_2_0 === 1 ? require('./player1.png') : game.cell_2_0 === 2 ? require('./player2.png') : require('./empty.png');
-      case 3:
-        return game.cell_0_1 === 1 ? require('./player1.png') : game.cell_0_1 === 2 ? require('./player2.png') : require('./empty.png');
-      case 4:
-        return game.cell_1_1 === 1 ? require('./player1.png') : game.cell_1_1 === 2 ? require('./player2.png') : require('./empty.png');
-      case 5:
-        return game.cell_2_1 === 1 ? require('./player1.png') : game.cell_2_1 === 2 ? require('./player2.png') : require('./empty.png');
-      case 6:
-        return game.cell_0_2 === 1 ? require('./player1.png') : game.cell_0_2 === 2 ? require('./player2.png') : require('./empty.png');
-      case 7:
-        return game.cell_1_2 === 1 ? require('./player1.png') : game.cell_1_2 === 2 ? require('./player2.png') : require('./empty.png');
-      case 8:
-        return game.cell_2_2 === 1 ? require('./player1.png') : game.cell_2_2 === 2 ? require('./player2.png') : require('./empty.png');
-    }
-  }
-
-  findCellFromPosition(game, position) {
-    switch (position) {
-      case 0:
-        return game.cell_0_0;
-      case 1:
-        return game.cell_1_0;
-      case 2:
-        return game.cell_2_0;
-      case 3:
-        return game.cell_0_1;
-      case 4:
-        return game.cell_1_1;
-      case 5:
-        return game.cell_2_1;
-      case 6:
-        return game.cell_0_2;
-      case 7:
-        return game.cell_1_2;
-      case 8:
-        return game.cell_2_2;
-    }
+    return game.cells[position] === 1 ? require('./player1.png') : game.cells[position] === 2 ? require('./player2.png') : require('./empty.png');
   }
 
   render() {

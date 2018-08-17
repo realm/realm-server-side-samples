@@ -6,15 +6,19 @@ var ticTacToeAiEngine = require("tic-tac-toe-ai-engine");
 
 // Transforme the Realm model into the game state format understood by ticTacToeAiEngine  
 function modelToGameState(gameState) {
-    var state = [gameState.cell_0_0 === 1 ? 'X' : gameState.cell_0_0 === 2 ? 'O' : '',
-    gameState.cell_0_1 === 1 ? 'X' : gameState.cell_0_1 === 2 ? 'O' : '',
-    gameState.cell_0_2 === 1 ? 'X' : gameState.cell_0_2 === 2 ? 'O' : '',
-    gameState.cell_1_0 === 1 ? 'X' : gameState.cell_1_0 === 2 ? 'O' : '',
-    gameState.cell_1_1 === 1 ? 'X' : gameState.cell_1_1 === 2 ? 'O' : '',
-    gameState.cell_1_2 === 1 ? 'X' : gameState.cell_1_2 === 2 ? 'O' : '',
-    gameState.cell_2_0 === 1 ? 'X' : gameState.cell_2_0 === 2 ? 'O' : '',
-    gameState.cell_2_1 === 1 ? 'X' : gameState.cell_2_1 === 2 ? 'O' : '',
-    gameState.cell_2_2 === 1 ? 'X' : gameState.cell_2_2 === 2 ? 'O' : '',];
+    var state = [];
+    for (var i = 0; i < gameState.cells.length; i++) {
+        switch (gameState.cells[i]) {
+            case 1:
+                state.push('X');
+                break;
+            case 2:
+                state.push('O');
+                break;
+            default:
+                state.push('');                    
+        }
+    }
     return state;
 }
 
@@ -40,15 +44,18 @@ function gameStateToModel(realm, model, nextMove) {
             }
         }
 
-        model.cell_0_0 = nextMove.nextBestGameState[0] === 'X' ? 1 : nextMove.nextBestGameState[0] === 'O' ? 2 : 0;
-        model.cell_0_1 = nextMove.nextBestGameState[1] === 'X' ? 1 : nextMove.nextBestGameState[1] === 'O' ? 2 : 0;
-        model.cell_0_2 = nextMove.nextBestGameState[2] === 'X' ? 1 : nextMove.nextBestGameState[2] === 'O' ? 2 : 0;
-        model.cell_1_0 = nextMove.nextBestGameState[3] === 'X' ? 1 : nextMove.nextBestGameState[3] === 'O' ? 2 : 0;
-        model.cell_1_1 = nextMove.nextBestGameState[4] === 'X' ? 1 : nextMove.nextBestGameState[4] === 'O' ? 2 : 0;
-        model.cell_1_2 = nextMove.nextBestGameState[5] === 'X' ? 1 : nextMove.nextBestGameState[5] === 'O' ? 2 : 0;
-        model.cell_2_0 = nextMove.nextBestGameState[6] === 'X' ? 1 : nextMove.nextBestGameState[6] === 'O' ? 2 : 0;
-        model.cell_2_1 = nextMove.nextBestGameState[7] === 'X' ? 1 : nextMove.nextBestGameState[7] === 'O' ? 2 : 0;
-        model.cell_2_2 = nextMove.nextBestGameState[8] === 'X' ? 1 : nextMove.nextBestGameState[8] === 'O' ? 2 : 0;
+        for (var i = 0; i < 9; i++) {
+            switch(nextMove.nextBestGameState[i]) {
+                case 'X': 
+                    model.cells[i] = 1;
+                    break;
+                case 'O': 
+                    model.cells[i] = 2;
+                    break; 
+                default:
+                    model.cells[i] = 0;                           
+            }            
+        }
     });
 }
 // The URL to the Realm Object Server
