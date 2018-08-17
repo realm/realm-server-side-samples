@@ -4,6 +4,8 @@
 
 `npm install`
 
+- Replace the placeholders variables (prefixed with `REPLACE_ME`) with your configuration in `App.js`.
+
 - Start
 
 `react-native run-android`
