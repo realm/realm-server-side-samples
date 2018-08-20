@@ -1,0 +1,15 @@
+{
+  "name": "tictactoe",
+  "version": "1.0.0",
+  "description": "Realm application that uses event handler to build a stateless tictactoe engine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "nh@realm.io",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "realm": "^2.6.0",
+    "tic-tac-toe-ai-engine": "^1.0.9"
+  }
+}
