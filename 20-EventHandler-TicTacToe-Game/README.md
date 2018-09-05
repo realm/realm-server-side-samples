@@ -3,3 +3,4 @@
 - Instructions to [run the server](server/README.md)
 - Instructions to [run the client](client/tictactoe/README.md)
 
+![](TicTacToeDemo.gif)
