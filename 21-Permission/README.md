@@ -1,4 +1,4 @@
-A demo that demonstrates the usage of the the permission API. 
+A demo that demonstrates the usage of the permission API. 
 
 This is a complimentary app to the Realm Cloud Chat App https://github.com/realm/my-first-realm-app/tree/master/android/ObjectPermissionAdvanced it shows how you can:
 

@@ -64,7 +64,6 @@ module.exports = {
 
 function __grantReadPermission(realm, userId, roomName) {
     realm.write(() => {
-        debugger;
         // find the private chat room
         let room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
 
