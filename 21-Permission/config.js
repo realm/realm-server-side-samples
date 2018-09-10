@@ -16,8 +16,8 @@
 
 /** swap out (credentials and server settings)*/
 module.exports = {
-    USERNAME: "ADMIN_USER",
-    PASSWORD: "ADMIN_PASSWORD",
-    SERVER: "INSTANCE.cloud.realm.io"
+    USERNAME: 'ADMIN_USER',
+    PASSWORD: 'ADMIN_PASSWORD',
+    SERVER: 'INSTANCE.cloud.realm.io'
 
 }

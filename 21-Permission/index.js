@@ -23,39 +23,35 @@ const Operations = require('./permissions')
 // open the Realm and perform operations
 Realm.Sync.User.login(`https://${Config.SERVER}`, Config.USERNAME, Config.PASSWORD)
     .then(user => {
-        Realm.open({
-            sync: {
-                url: `realms://${Config.SERVER}/default`,
-                user: user,
-                fullSynchronization: false,
-            },
-            schema: [
-                Schema.MessageSchema,
-                Schema.PublicChatRoomSchema,
-                Schema.PrivateChatRoomSchema,
-                Realm.Permissions.Permission,
-                Realm.Permissions.User,
-                Realm.Permissions.Role,
-                Realm.Permissions.Class,
-                Realm.Permissions.Realm
-            ],
-        })
-            .then(realm => {
-                handleOptions(realm)
-            })
+        let config = user.createConfiguration()
+        config.schema = [
+            Schema.MessageSchema,
+            Schema.PublicChatRoomSchema,
+            Schema.PrivateChatRoomSchema,
+            // remove permission schema below once https://github.com/realm/realm-js/issues/2016 and 
+            // https://github.com/realm/realm-js/issues/2016 are fixed 
+            Realm.Permissions.Permission,
+            Realm.Permissions.User,
+            Realm.Permissions.Role,
+            Realm.Permissions.Class,
+            Realm.Permissions.Realm
+        ]
+        Realm.open(config).then((realm) => {
+            handleOptions(realm)
+        });
     })
 
 
 // --create General (create a public chat room named 'General')
 // --create Sales -p (create a private chat room named 'Sales')
 // --lock  (lock the schema)
-// --grant read --user john@doe.com --room Sales   (grant read permission to the user in the specified private room)
-// --ungrant read --user john@doe.com --room Sales   (ungrant read permission to the user in the specified private room)
-// --grant write --user john@doe.com --room Sales   (grant write permission to the user in the specified private room)
-// --ungrant write --user john@doe.com --room Sales   (ungrant write permission to the user in the specified private room)
+// --grant read --user me@email.com --room Sales   (grant read permission to the user in the specified private room)
+// --ungrant read --user me@email.com --room Sales   (ungrant read permission to the user in the specified private room)
+// --grant write --user me@email.com --room Sales   (grant write permission to the user in the specified private room)
+// --ungrant write --user me@email.com --room Sales   (ungrant write permission to the user in the specified private room)
 // parsing command-line options
-let getopt = require('node-getopt').create([
-    ['u', 'user=ARG', 'the user provderId (example john@doe.com)'],
+const getopt = require('node-getopt').create([
+    ['u', 'user=ARG', 'the user provderId (example me@email.com)'],
     ['r', 'room=ARG', 'the chat room name'],
     ['c', 'create=ARG', 'create a new private chat room'],
     ['p', '', 'designate a private chat room'],
@@ -64,12 +60,12 @@ let getopt = require('node-getopt').create([
     ['l', 'lock', 'lock the schmema'],
     ['h', 'help', 'display this text'],
 ]).bindHelp()
-let opt = getopt.parse(process.argv.slice(2))
+const opt = getopt.parse(process.argv.slice(2))
 
-function handleOptions(realm) {
+async function handleOptions(realm) {
     if (opt.options['lock']) {
         console.log('Locking schema ...')
-        Operations.lockingTheSchema(realm)
+        Operations.lockSchema(realm)
 
     } else if (opt.options['create']) {
         if (opt.options['p']) {
@@ -84,61 +80,58 @@ function handleOptions(realm) {
     } else if (opt.options['grant']) {
         console.log(`Granting ${opt.options['grant']} permission to user: ${opt.options['user']} on private chat room: ${opt.options['room']}`)
         if (opt.options['grant'] === 'read') {
-            __lookupPermissionUser(realm, opt.options['user'])
-            .then((userId) => { Operations.grantReadPermission(realm, userId, opt.options['room']) })            
+            const userId = await __lookupPermissionUser(realm, opt.options['user'])
+            Operations.grantReadPermission(realm, userId, opt.options['room'])
 
         } else if (opt.options['grant'] === 'write') {
-            __lookupPermissionUser(realm, opt.options['user'])
-            .then((userId) => { Operations.grantWritePermission(realm, userId, opt.options['room']) })
+            const userId = await __lookupPermissionUser(realm, opt.options['user'])
+            Operations.grantWritePermission(realm, userId, opt.options['room'])
 
         } else {
             console.error(`Unsupported permission: ${opt.options['grant']}`)
-            process.exit(0)
+            process.exit(-1)
         }
 
     } else if (opt.options['ungrant']) {
         console.log(`Ungranting ${opt.options['ungrant']} permission to user: ${opt.options['user']} on private chat room: ${opt.options['room']}`)
         if (opt.options['ungrant'] === 'read') {
-            __lookupPermissionUser(realm, opt.options['user'])
-            .then((userId) => { Operations.unGrantReadPermission(realm, userId, opt.options['room']) })
+            const userId = await __lookupPermissionUser(realm, opt.options['user'])
+            Operations.unGrantReadPermission(realm, userId, opt.options['room'])
 
         } else if (opt.options['ungrant'] === 'write') {
-            __lookupPermissionUser(realm, opt.options['user'])
-            .then((userId) => { Operations.unGrantWritePermission(realm, userId, opt.options['room']) })
+            const userId = await __lookupPermissionUser(realm, opt.options['user'])
+            Operations.unGrantWritePermission(realm, userId, opt.options['room'])
 
         } else {
             console.error(`Unsupported permission: ${opt.options['ungrant']}`)
-            process.exit(0)
+            process.exit(-1)
         }
 
     } else {
         opt.showHelp()
-        process.exit(0)
+        process.exit(-1)
     }
 }
 
-function __lookupPermissionUser(realm, providerId) {
-    return Realm.Sync.User.login(`https://${Config.SERVER}`, Config.USERNAME, Config.PASSWORD)
-        .then(user => {
-            return Realm.open({
-                sync: {
-                    url: `realms://${Config.SERVER}/__admin`,
-                    user: user,
-                    fullSynchronization: true,
-                }
-            })
-                .then(realm => {
-                    let users = realm.objects(`User`).filtered(`accounts.providerId = '${providerId}'`)
-                    if (!users.isEmpty()) {
-                        let userId = users[0].userId;
-                        realm.close()
-                        return userId;
+async function __lookupPermissionUser(realm, providerId) {
+    return Realm.open({
+        sync: {
+            url: `realms://${Config.SERVER}/__admin`,
+            user: Realm.Sync.User.current,
+            fullSynchronization: true
+        }
+    })
+    .then(realm => {
+        const users = realm.objects(`User`).filtered(`accounts.providerId = '${providerId}'`)
+        if (!users.isEmpty()) {
+            const userId = users[0].userId;
+            realm.close()
+            return userId;
 
-                    } else {
-                        realm.close()
-                        console.error(`Could not lookup the userId for ${providerId}`)
-                        process.exit(0)
-                    }
-                })
-        })
+        } else {
+            realm.close()
+            console.error(`Could not lookup the userId for ${providerId}`)
+            process.exit(-1)
+        }
+    })
 }

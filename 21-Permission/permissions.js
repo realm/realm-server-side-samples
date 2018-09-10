@@ -15,50 +15,51 @@
 'use strict'
 
 const Schema = require('./schema')
+const Realm = require('realm')
 
 module.exports = {
     createPrivateRoom: function (realm, roomName) {
         realm.write(() => {
             realm.create(Schema.PrivateChatRoomSchema.name, { name: roomName })
         })
-        finish(realm);
+        finish(realm)
     },
 
     createPublicRoom: function (realm, roomName) {
         realm.write(() => {
             realm.create(Schema.PublicChatRoomSchema.name, { name: roomName })
         })
-        finish(realm);
+        finish(realm)
     },
 
-    grantReadPermission: function (realm, userId, roomName) {
-        subscribe(realm)
-            .then(() => { __grantReadPermission(realm, userId, roomName) })
-            .then(() => { finish(realm) });
+    grantReadPermission: async function (realm, userId, roomName) {
+        await subscribe(realm)
+        __grantReadPermission(realm, userId, roomName)
+        finish(realm)
     },
 
-    grantWritePermission: function (realm, userId, roomName) {
-        subscribe(realm)
-            .then(() => { __grantWritePermission(realm, userId, roomName) })
-            .then(() => { finish(realm) });
+    grantWritePermission: async function (realm, userId, roomName) {
+        await subscribe(realm)
+        __grantWritePermission(realm, userId, roomName)
+        finish(realm)
     },
 
-    unGrantReadPermission: function (realm, userId, roomName) {
-        subscribe(realm)
-            .then(() => { __unGrantReadPermission(realm, userId, roomName) })
-            .then(() => { finish(realm) });
+    unGrantReadPermission: async function (realm, userId, roomName) {
+        await subscribe(realm)
+        __unGrantReadPermission(realm, userId, roomName)
+        finish(realm)
     },
 
-    unGrantWritePermission: function (realm, userId, roomName) {
-        subscribe(realm)
-            .then(() => { __unGrantWritePermission(realm, userId, roomName) })
-            .then(() => { finish(realm) });
+    unGrantWritePermission: async function (realm, userId, roomName) {
+        await subscribe(realm)
+        __unGrantWritePermission(realm, userId, roomName)
+        finish(realm)
     },
 
-    lockingTheSchema: function (realm) {
-        subscribe(realm)
-            .then(() => { __lockingTheSchema(realm) })
-            .then(() => { finish(realm) });
+    lockSchema: async function (realm) {
+        await subscribe(realm)
+        __lockSchema(realm)
+        finish(realm)
     }
 }
 
@@ -75,7 +76,7 @@ function __grantReadPermission(realm, userId, roomName) {
         if (userPermissions.isEmpty()) {
             // create a permission using the built-in role of the user
             let permission = realm.create(Realm.Permissions.Permission.schema.name, { canRead: true, canQuery: true, role: user.role })
-            
+
             // add it permission to the project
             room['permissions'].push(permission)
 
@@ -84,7 +85,6 @@ function __grantReadPermission(realm, userId, roomName) {
             userPermissions[0].canQuery = true
         }
     })
-    finish(realm);
 }
 
 function __unGrantReadPermission(realm, userId, roomName) {
@@ -119,7 +119,7 @@ function __grantWritePermission(realm, userId, roomName) {
             // Note: sometimes it makes sense to grant a particular user only `write` permission without read
             //       this can happen when a user is authorized only to write to a log for instance. In our Chat app
             ///      giving a user a write only permission doesn't make sense (he/she should have read granted as well).
-            permission = realm.create(Realm.Permissions.Permission.schema.name, { canUpdate: true, canRead: true, canQuery: true, role: user.role })
+            const permission = realm.create(Realm.Permissions.Permission.schema.name, { canUpdate: true, canRead: true, canQuery: true, role: user.role })
             // and it permission to the room
             room['permissions'].push(permission)
 
@@ -148,7 +148,7 @@ function __unGrantWritePermission(realm, userId, roomName) {
     })
 }
 
-function __lockingTheSchema(realm) {
+function __lockSchema(realm) {
     realm.write(() => {
         // Remove update permissions from the __Role table to prevent a malicious user
         // from adding themselves to another user's private role.
@@ -167,13 +167,13 @@ function __lockingTheSchema(realm) {
         privateChatPermission.canSetPermissions = false
 
         // Lock the permission and schema
-        let everyonePermission = realm.objects(Realm.Permissions.Realm.schema.name).filtered("id = 0")[0].permissions[0]
+        let everyonePermission = realm.objects(Realm.Permissions.Realm.schema.name).filtered('id = 0')[0].permissions[0]
         everyonePermission.canModifySchema = false
         everyonePermission.canSetPermissions = false
     })
 }
 
-const subscribe = function (realm) {
+const subscribe = async function (realm) {
     return new Promise(function (resolve, reject) {
         let privateRooms = realm.objects(Schema.PrivateChatRoomSchema.name)
         let subscription = privateRooms.subscribe()
@@ -182,12 +182,11 @@ const subscribe = function (realm) {
             if (state === Realm.Sync.SubscriptionState.Complete) {
                 resolve()
             } else if (state === Realm.Sync.SubscriptionState.Error) {
-                reject(Error("Could not subscribe to PrivateChatRoom objects"));
+                reject(Error('Could not subscribe to PrivateChatRoom objects'));
             }
         })
     });
 }
-
 
 function finish(realm) {
     // wait for data to be uploaded to the server
