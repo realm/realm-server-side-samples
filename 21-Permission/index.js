@@ -21,20 +21,13 @@ const Schema = require('./schema')
 const Operations = require('./permissions')
 
 // open the Realm and perform operations
-Realm.Sync.User.login(`https://${Config.SERVER}`, Config.USERNAME, Config.PASSWORD)
+Realm.Sync.User.login(`https://${Config.SERVER}`, Realm.Sync.Credentials.usernamePassword(Config.USERNAME, Config.PASSWORD))
     .then(user => {
         let config = user.createConfiguration()
         config.schema = [
             Schema.MessageSchema,
             Schema.PublicChatRoomSchema,
-            Schema.PrivateChatRoomSchema,
-            // remove permission schema below once https://github.com/realm/realm-js/issues/2016 and 
-            // https://github.com/realm/realm-js/issues/2016 are fixed 
-            Realm.Permissions.Permission,
-            Realm.Permissions.User,
-            Realm.Permissions.Role,
-            Realm.Permissions.Class,
-            Realm.Permissions.Realm
+            Schema.PrivateChatRoomSchema
         ]
         Realm.open(config).then((realm) => {
             handleOptions(realm)
@@ -53,7 +46,7 @@ Realm.Sync.User.login(`https://${Config.SERVER}`, Config.USERNAME, Config.PASSWO
 const getopt = require('node-getopt').create([
     ['u', 'user=ARG', 'the user provderId (example me@email.com)'],
     ['r', 'room=ARG', 'the chat room name'],
-    ['c', 'create=ARG', 'create a new private chat room'],
+    ['c', 'create=ARG', 'create a new chat room'],
     ['p', '', 'designate a private chat room'],
     ['g', 'grant=read|write', 'grant read/write permission to user on a private chat room'],
     ['U', 'ungrant=read|write', 'ungrant the read/write permission to user on a private chat room'],
