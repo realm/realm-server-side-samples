@@ -34,36 +34,36 @@ module.exports = {
 
     grantReadPermission: async function (realm, userId, roomName) {
         await subscribe(realm)
-        __grantReadPermission(realm, userId, roomName)
+        _grantReadPermission(realm, userId, roomName)
         finish(realm)
     },
 
     grantWritePermission: async function (realm, userId, roomName) {
         await subscribe(realm)
-        __grantWritePermission(realm, userId, roomName)
+        _grantWritePermission(realm, userId, roomName)
         finish(realm)
     },
 
     unGrantReadPermission: async function (realm, userId, roomName) {
         await subscribe(realm)
-        __unGrantReadPermission(realm, userId, roomName)
+        _unGrantReadPermission(realm, userId, roomName)
         finish(realm)
     },
 
     unGrantWritePermission: async function (realm, userId, roomName) {
         await subscribe(realm)
-        __unGrantWritePermission(realm, userId, roomName)
+        _unGrantWritePermission(realm, userId, roomName)
         finish(realm)
     },
 
     lockSchema: async function (realm) {
         await subscribe(realm)
-        __lockSchema(realm)
+        _lockSchema(realm)
         finish(realm)
     }
 }
 
-function __grantReadPermission(realm, userId, roomName) {
+function _grantReadPermission(realm, userId, roomName) {
     realm.write(() => {
         // find the private chat room
         let room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
@@ -87,7 +87,7 @@ function __grantReadPermission(realm, userId, roomName) {
     })
 }
 
-function __unGrantReadPermission(realm, userId, roomName) {
+function _unGrantReadPermission(realm, userId, roomName) {
     realm.write(() => {
         // find the private chat room
         let room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
@@ -103,7 +103,7 @@ function __unGrantReadPermission(realm, userId, roomName) {
     })
 }
 
-function __grantWritePermission(realm, userId, roomName) {
+function _grantWritePermission(realm, userId, roomName) {
     realm.write(() => {
         // find the private chat room
         let room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
@@ -133,7 +133,7 @@ function __grantWritePermission(realm, userId, roomName) {
     })
 }
 
-function __unGrantWritePermission(realm, userId, roomName) {
+function _unGrantWritePermission(realm, userId, roomName) {
     realm.write(() => {
         // find the private chat room
         let room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
@@ -148,7 +148,7 @@ function __unGrantWritePermission(realm, userId, roomName) {
     })
 }
 
-function __lockSchema(realm) {
+function _lockSchema(realm) {
     realm.write(() => {
         // Remove update permissions from the __Role table to prevent a malicious user
         // from adding themselves to another user's private role.

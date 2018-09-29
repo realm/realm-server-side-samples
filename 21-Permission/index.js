@@ -73,11 +73,11 @@ async function handleOptions(realm) {
     } else if (opt.options['grant']) {
         console.log(`Granting ${opt.options['grant']} permission to user: ${opt.options['user']} on private chat room: ${opt.options['room']}`)
         if (opt.options['grant'] === 'read') {
-            const userId = await __lookupPermissionUser(realm, opt.options['user'])
+            const userId = await _lookupPermissionUser(realm, opt.options['user'])
             Operations.grantReadPermission(realm, userId, opt.options['room'])
 
         } else if (opt.options['grant'] === 'write') {
-            const userId = await __lookupPermissionUser(realm, opt.options['user'])
+            const userId = await _lookupPermissionUser(realm, opt.options['user'])
             Operations.grantWritePermission(realm, userId, opt.options['room'])
 
         } else {
@@ -88,11 +88,11 @@ async function handleOptions(realm) {
     } else if (opt.options['ungrant']) {
         console.log(`Ungranting ${opt.options['ungrant']} permission to user: ${opt.options['user']} on private chat room: ${opt.options['room']}`)
         if (opt.options['ungrant'] === 'read') {
-            const userId = await __lookupPermissionUser(realm, opt.options['user'])
+            const userId = await _lookupPermissionUser(realm, opt.options['user'])
             Operations.unGrantReadPermission(realm, userId, opt.options['room'])
 
         } else if (opt.options['ungrant'] === 'write') {
-            const userId = await __lookupPermissionUser(realm, opt.options['user'])
+            const userId = await _lookupPermissionUser(realm, opt.options['user'])
             Operations.unGrantWritePermission(realm, userId, opt.options['room'])
 
         } else {
@@ -106,7 +106,7 @@ async function handleOptions(realm) {
     }
 }
 
-async function __lookupPermissionUser(realm, providerId) {
+async function _lookupPermissionUser(realm, providerId) {
     return Realm.open({
         sync: {
             url: `realms://${Config.SERVER}/__admin`,
