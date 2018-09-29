@@ -12,31 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-'use strict';
+'use strict'
 
 module.exports = {
     MessageSchema: {
         name: 'Message',
         properties: {
-            'body': { type: 'string', optional: false },
-            'author': { type: 'string', optional: false },
+            body: 'string',
+            author: 'string',
         }
     },
     PublicChatRoomSchema: {
         name: 'PublicChatRoom',
         primaryKey: 'name',
         properties: {
-            'name': { type: 'string', optional: false },
-            'messages': { type: 'list', objectType: 'Message' }
+            name: 'string',
+            messages: 'Message[]'
         }
     },
     PrivateChatRoomSchema: {
         name: 'PrivateChatRoom',
         primaryKey: 'name',
         properties: {
-            'name': { type: 'string', optional: false },
-            'messages': { type: 'list', objectType: 'Message' },
-            'permissions': { type: 'list', objectType: '__Permission' }
+            name: 'string',
+            messages: 'Message[]',
+            permissions: '__Permission[]'
         }
     }
 }

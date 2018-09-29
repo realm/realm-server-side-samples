@@ -66,16 +66,16 @@ module.exports = {
 function _grantReadPermission(realm, userId, roomName) {
     realm.write(() => {
         // find the private chat room
-        let room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
+        const room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
 
         // find the permission user
-        let user = realm.objects(Realm.Permissions.User.schema.name).filtered(`id = '${userId}'`)[0]
+        const user = realm.objects(Realm.Permissions.User.schema.name).filtered(`id = '${userId}'`)[0]
 
         // check if this user has already a permission
-        let userPermissions = room.permissions.filtered(`role.name = '${user.role.name}'`)
+        const userPermissions = room.permissions.filtered(`role.name = '${user.role.name}'`)
         if (userPermissions.isEmpty()) {
             // create a permission using the built-in role of the user
-            let permission = realm.create(Realm.Permissions.Permission.schema.name, { canRead: true, canQuery: true, role: user.role })
+            const permission = realm.create(Realm.Permissions.Permission.schema.name, { canRead: true, canQuery: true, role: user.role })
 
             // add it permission to the project
             room['permissions'].push(permission)
@@ -90,13 +90,13 @@ function _grantReadPermission(realm, userId, roomName) {
 function _unGrantReadPermission(realm, userId, roomName) {
     realm.write(() => {
         // find the private chat room
-        let room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
+        const room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
 
         // find the permission user
-        let user = realm.objects(Realm.Permissions.User.schema.name).filtered(`id = '${userId}'`)[0]
+        const user = realm.objects(Realm.Permissions.User.schema.name).filtered(`id = '${userId}'`)[0]
 
         // find the permission granted to the user to modify it
-        let userPermission = room.permissions.filtered(`role.name = '${user.role.name}'`)[0]
+        const userPermission = room.permissions.filtered(`role.name = '${user.role.name}'`)[0]
 
         userPermission.canRead = false
         userPermission.canQuery = false
@@ -106,13 +106,13 @@ function _unGrantReadPermission(realm, userId, roomName) {
 function _grantWritePermission(realm, userId, roomName) {
     realm.write(() => {
         // find the private chat room
-        let room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
+        const room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
 
         // find the permission user
-        let user = realm.objects(Realm.Permissions.User.schema.name).filtered(`id = '${userId}'`)[0]
+        const user = realm.objects(Realm.Permissions.User.schema.name).filtered(`id = '${userId}'`)[0]
 
         // check if this user has already a permission
-        let userPermissions = room.permissions.filtered(`role.name = '${user.role.name}'`)
+        const userPermissions = room.permissions.filtered(`role.name = '${user.role.name}'`)
         if (userPermissions.isEmpty()) {
             // create a new permission using the built-in role of the user
             //
@@ -122,7 +122,6 @@ function _grantWritePermission(realm, userId, roomName) {
             const permission = realm.create(Realm.Permissions.Permission.schema.name, { canUpdate: true, canRead: true, canQuery: true, role: user.role })
             // and it permission to the room
             room['permissions'].push(permission)
-
 
         } else {
             userPermissions[0].canUpdate = true
@@ -136,13 +135,13 @@ function _grantWritePermission(realm, userId, roomName) {
 function _unGrantWritePermission(realm, userId, roomName) {
     realm.write(() => {
         // find the private chat room
-        let room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
+        const room = realm.objects(Schema.PrivateChatRoomSchema.name).filtered(`name = '${roomName}'`)[0]
 
         // find the permission user
-        let user = realm.objects(Realm.Permissions.User.schema.name).filtered(`id = '${userId}'`)[0]
+        const user = realm.objects(Realm.Permissions.User.schema.name).filtered(`id = '${userId}'`)[0]
 
         // find the permission granted to the user to modify it
-        let userPermission = room.permissions.filtered(`role.name = '${user.role.name}'`)[0]
+        const userPermission = room.permissions.filtered(`role.name = '${user.role.name}'`)[0]
 
         userPermission.canUpdate = false
     })
@@ -152,14 +151,14 @@ function _lockSchema(realm) {
     realm.write(() => {
         // Remove update permissions from the __Role table to prevent a malicious user
         // from adding themselves to another user's private role.
-        let rolePermission = realm.objects(Realm.Permissions.Class.schema.name).filtered(`name = '${Realm.Permissions.Role.schema.name}'`)[0].permissions[0]
+        const rolePermission = realm.objects(Realm.Permissions.Class.schema.name).filtered(`name = '${Realm.Permissions.Role.schema.name}'`)[0].permissions[0]
         rolePermission.canUpdate = false
         rolePermission.canCreate = false// we use the user private role, no other roles are allowed to be created
 
         // Lower "everyone" Role on Message, PrivateChatRoom and PublicChatRoom to restrict permission modifications
-        let messagePermission = realm.objects(Realm.Permissions.Class.schema.name).filtered(`name = '${Schema.MessageSchema.name}'`)[0].permissions[0]
-        let publicChatPermission = realm.objects(Realm.Permissions.Class.schema.name).filtered(`name = '${Schema.PublicChatRoomSchema.name}'`)[0].permissions[0]
-        let privateChatPermission = realm.objects(Realm.Permissions.Class.schema.name).filtered(`name = '${Schema.PrivateChatRoomSchema.name}'`)[0].permissions[0]
+        const messagePermission = realm.objects(Realm.Permissions.Class.schema.name).filtered(`name = '${Schema.MessageSchema.name}'`)[0].permissions[0]
+        const publicChatPermission = realm.objects(Realm.Permissions.Class.schema.name).filtered(`name = '${Schema.PublicChatRoomSchema.name}'`)[0].permissions[0]
+        const privateChatPermission = realm.objects(Realm.Permissions.Class.schema.name).filtered(`name = '${Schema.PrivateChatRoomSchema.name}'`)[0].permissions[0]
 
         messagePermission.canQuery = false // Message are not queryable since they're accessed only via the Realm List (from PublicChatRoom or PrivateChatRoom)
         messagePermission.canSetPermissions = false
@@ -167,7 +166,7 @@ function _lockSchema(realm) {
         privateChatPermission.canSetPermissions = false
 
         // Lock the permission and schema
-        let everyonePermission = realm.objects(Realm.Permissions.Realm.schema.name).filtered('id = 0')[0].permissions[0]
+        const everyonePermission = realm.objects(Realm.Permissions.Realm.schema.name).filtered('id = 0')[0].permissions[0]
         everyonePermission.canModifySchema = false
         everyonePermission.canSetPermissions = false
     })
@@ -175,25 +174,25 @@ function _lockSchema(realm) {
 
 const subscribe = async function (realm) {
     return new Promise(function (resolve, reject) {
-        let privateRooms = realm.objects(Schema.PrivateChatRoomSchema.name)
-        let subscription = privateRooms.subscribe()
+        const privateRooms = realm.objects(Schema.PrivateChatRoomSchema.name)
+        const subscription = privateRooms.subscribe()
 
         subscription.addListener((sub, state) => {
             if (state === Realm.Sync.SubscriptionState.Complete) {
                 resolve()
             } else if (state === Realm.Sync.SubscriptionState.Error) {
-                reject(Error('Could not subscribe to PrivateChatRoom objects'));
+                reject(Error('Could not subscribe to PrivateChatRoom objects'))
             }
         })
-    });
+    })
 }
 
 function finish(realm) {
     // wait for data to be uploaded to the server
     realm.syncSession.addProgressNotification('upload', 'forCurrentlyOutstandingWork', (transferred, transferable) => {
         if (transferred === transferable) {
-            process.exit(0);
+            process.exit(0)
         }
-    });
+    })
 }
 
