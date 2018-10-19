@@ -1,0 +1,19 @@
+{
+  "name": "permission-demo",
+  "version": "1.0.0",
+  "description": "A tool for granting permission",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Realm Inc.",
+    "email": "info@realm.io",
+    "url": "https://realm.io"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "node-getopt": "^0.3.2",
+    "realm": "^2.16.0"
+  }
+}
