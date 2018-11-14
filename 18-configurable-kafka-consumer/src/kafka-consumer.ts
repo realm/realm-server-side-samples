@@ -60,7 +60,8 @@ export class KafkaConsumer {
 
         // Login to realm with admin access
         console.log("Connecting to Realm server: " + s.instance);
-        const user = await Realm.Sync.User.login(authURL, s.username, s.password);
+        const creds = Realm.Sync.Credentials.usernamePassword(s.username, s.password);
+        const user = await Realm.Sync.User.login(authURL, creds);
         console.log("Logged in user " + s.username);
 
         let realm: Realm = null;
