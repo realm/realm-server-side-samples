@@ -14,7 +14,7 @@ The following code samples are meant to help any developer who is working with R
 - [Deleting Objects with TTL](https://github.com/realm/realm-sync-samples/tree/master/04-deleting-objects-with-ttl)
 - [Convert a local Realm to a Synced Realm](https://github.com/realm/realm-sync-samples/tree/master/08-convert-a-local-realm-to-a-synced-realm)
 - [REST API Integration with the Event Handler](https://github.com/realm/realm-sync-samples/tree/master/11-rest-api)
-- [Dequeuing Messages](https://github.com/realm/realm-sync-samples/tree/master/12-dequeueing-messages_
+- [Dequeuing Messages](https://github.com/realm/realm-sync-samples/tree/master/12-dequeueing-messages)
 - [Bulk Loading Data into Realm Object Server](https://github.com/realm/realm-sync-samples/tree/master/13-loading-sample-data)
 - [Converting a Full Realm to a Reference Realm](https://github.com/realm/realm-sync-samples/tree/master/14-converting-realm-types)
 
