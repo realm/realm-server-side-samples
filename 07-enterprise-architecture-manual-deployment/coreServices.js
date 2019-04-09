@@ -1,7 +1,6 @@
 const ros = require('realm-object-server');
 const rose = require('realm-object-server-enterprise');
 const path = require('path');
-// const { GraphQLService } = require("realm-graphql-service"); //Uncomment if you'd like to use Realm GraphQL
 
 
 const server = new ros.BasicServer();
@@ -39,7 +38,7 @@ const startConfig = {
         new ros.LogService(),
         new ros.HealthService(),
         new ros.WelcomeService(),
-      //  new GraphQLService({ disableAuthentication: true }) //Uncomment if you'd like to use Realm GraphQL
+    //    new ros.GraphQLService({ disableAuthentication: true }) //Uncomment if you'd like to use Realm GraphQL
     ],
     dataPath: path.join(__dirname, 'data'),
     discovery,
