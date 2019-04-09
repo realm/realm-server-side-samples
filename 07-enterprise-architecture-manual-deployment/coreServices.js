@@ -38,7 +38,7 @@ const startConfig = {
         new ros.LogService(),
         new ros.HealthService(),
         new ros.WelcomeService(),
-    //    new ros.GraphQLService({ disableAuthentication: true }) //Uncomment if you'd like to use Realm GraphQL
+        // new ros.GraphQLService() //Uncomment if you'd like to use Realm GraphQL
     ],
     dataPath: path.join(__dirname, 'data'),
     discovery,
