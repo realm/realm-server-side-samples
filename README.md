@@ -1,6 +1,6 @@
 # Realm Sync Samples
 
-The following code samples are meant to help any developer who is working with Realm Sync. The majority of these code samples are written using Realm's Node Javascript SDK, but the concepts can be applied to most other bindings. 
+The following code samples are meant to help any developer who is working with Realm Sync. The majority of these code samples are written using Realm's Node Javascript SDK, but the concepts can be applied to most other SDKs. 
 
 ## Node.js Samples 
 
