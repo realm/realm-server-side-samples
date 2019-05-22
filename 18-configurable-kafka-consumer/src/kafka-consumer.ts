@@ -113,7 +113,7 @@ export class KafkaConsumer {
         console.log("Opened Realm at " + realmURL);
 
         // Check if we have a stored offset or if this is the first run of the app
-        let kafkaState = realm.objectForPrimaryKey<KafkaState>('_KafkaState', s.kafkaTopic);
+        let kafkaState: KafkaState = realm.objectForPrimaryKey<KafkaState>('_KafkaState', s.kafkaTopic);
         if (kafkaState === undefined) {
             realm.write(() => {
                 kafkaState = realm.create('_KafkaState', {topic: s.kafkaTopic, offset: s.KafkaStartOffset}, true);
@@ -123,7 +123,7 @@ export class KafkaConsumer {
         // Create an instance of the Kafka consumer
         // If the offset is set to null, we will just start listening for new messages, otherwise we
         // will start from the specified offset
-        const client   = new Kafka.Client(s.kafkaHost);
+        const client   = new Kafka.KafkaClient({kafkaHost: s.kafkaHost});
         client.on('ready', function () {
             console.log('Kafka client connected to:', s.kafkaHost);
         });
@@ -142,7 +142,7 @@ export class KafkaConsumer {
         });
     }
 
-    consume(realm: Realm, client: Kafka.Client, state: KafkaState, latestOffset: number) {
+    consume(realm: Realm, client: Kafka.KafkaClient, state: KafkaState, latestOffset: number) {
         const s = this.settings;
 
         const offset = (state.offset === null) ? latestOffset : state.offset;

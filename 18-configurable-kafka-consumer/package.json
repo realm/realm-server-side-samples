@@ -6,7 +6,6 @@
   "description": "Generic Cache manager for Realm Cloud",
   "dependencies": {
     "@types/kafka-node": "^2.0.6",
-    "@types/realm": "^1.13.0",
     "kafka-node": "latest",
     "realm": "latest"
   },
