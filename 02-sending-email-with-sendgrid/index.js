@@ -22,7 +22,7 @@ const EmailSchema = {
 async function main() {
   const adminUser = await Realm.Sync.User.login(`https:${SERVER_URL}`, 'realm-admin', 'REPLACE_ME')
   Realm.Sync.addListener(`realm:${SERVER_URL}`, adminUser, NOTIFIER_PATH, 'change', async (changeEvent) => {
-    const notifications = realm.objects('Notification');
+    const notifications = Realm.objects('Notification');
     const insertedNotificationsIndices = changeEvent.changes.Notification.insertions;
 
     for (let index of insertedNotificationsIndices) {
