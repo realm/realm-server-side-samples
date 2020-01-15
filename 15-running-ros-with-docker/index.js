@@ -32,7 +32,7 @@ server.start({
     // phased out in March 2018. Free-tier users are encouraged to move to Realm
     // Cloud (see https://cloud.realm.io for more information).
     //featureToken: '<INSERT_FEATURE_TOKEN>'
-    featureToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJSZWFsbSIsIkFkYXB0ZXIiOnRydWUsIkJhY2t1cCI6dHJ1ZSwiTG9hZEJhbGFuY2luZyI6dHJ1ZSwiTm90aWZpZXIiOnRydWUsIlN5bmMiOnRydWUsImlhdCI6MTUwODUyMjg1OX0.kDAvHsanXWKvQqDa8TsAfG8cedRUgboOGQy5-KKMpNWJOG8MMd-Oux_XLB33sQBB-Ee8Z6mI7xFLGf7ej5pkC7QHXSw7FqlCXJJpiDCEzDqHyJ6O7WTW9mAeY78EWoR5NFojejXw_cyOxjSsWdL1LXfqMuH9PQ5-eiKoJ45xNeksUYhYSNL8cADR09Lf1oYLaYSDLJlV4vAN2vG_swWP27L2RLrJQNAM_wOdcBsyJT5bB1d3WXX25Rxt2SAs6WmymLen5E94Kv2wRXhh1TRQLxCY-JwTmAScqXdWmVEAhHfPI09qfXoGvYYtQ1LjFCfGjJyH1ZEqwzr-n27l8bkYcw'
+    featureToken: '<INSERT_TOKEN_HERE>'
 })
     .then(function () {
     console.log("Realm Object Server was started on " + server.address);
